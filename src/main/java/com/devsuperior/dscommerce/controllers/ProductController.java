@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -23,6 +24,11 @@ public class ProductController {
     @GetMapping(value = "/{id}")
     public ProductDTO findById(@PathVariable Long id) {
         return productService.findById(id);
+    }
+
+    @GetMapping(value = "/{id}")
+    public List<ProductDTO> findAll() {
+        return productService.findAll();
     }
 
 }
