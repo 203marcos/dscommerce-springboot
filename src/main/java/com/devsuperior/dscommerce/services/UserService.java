@@ -26,7 +26,7 @@ public class UserService {
     public User authenticated() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        return userRepository.findByEmail(username)
+        return userRepository.findByEmailWithRoles(username)
                 .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
     }
 }
