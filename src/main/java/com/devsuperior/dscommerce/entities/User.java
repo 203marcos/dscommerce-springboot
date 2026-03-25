@@ -4,9 +4,10 @@ import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "tb_user")
@@ -24,10 +25,15 @@ public class User {
     private String password;
 
     @OneToMany(mappedBy = "client")
-    private List <Order> orders = new ArrayList<Order>();
+    private List<Order> orders = new ArrayList<>();
 
-    public User(){
+    @ManyToMany
+    @JoinTable(name = "tb_user_role",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
 
+    public User() {
     }
 
     public User(Long id, String name, String email, String phone, LocalDate birthDate, String password) {
@@ -37,7 +43,14 @@ public class User {
         this.phone = phone;
         this.birthDate = birthDate;
         this.password = password;
+    }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -84,36 +97,23 @@ public class User {
         return orders;
     }
 
-    public Long getId() {
-        return id;
+    public Set<Role> getRoles() {
+        return roles;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public boolean hasRole(String roleName) {
+        return roles.stream().anyMatch(role -> role.getAuthority().equals(roleName));
     }
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-
-        User user = (User) o;
+        if (this == o) return true;
+        if (!(o instanceof User user)) return false;
         return Objects.equals(id, user.id);
     }
 
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", phone='" + phone + '\'' +
-                ", birthDate=" + birthDate +
-                ", password='" + password + '\'' +
-                '}';
     }
 }
