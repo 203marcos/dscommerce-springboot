@@ -12,18 +12,18 @@ Projeto de backend para um sistema de e-commerce, desenvolvido com Spring Boot.
 
 ## Funcionalidades Implementadas
 
-- **CRUD de Produtos**  
-  - Listagem paginada de produtos
-  - Consulta de produto por ID
-  - Cadastro de novo produto
-  - Atualização de produto existente
-  - Remoção de produto
+- **Autenticacao e autorizacao (JWT)**
+  - `POST /auth/login` retorna token de acesso
+  - Endpoints `GET /products` e `GET /products/{id}` sao publicos
+  - Endpoints `POST/PUT/DELETE /products` exigem perfil `ADMIN`
+  - Endpoint `GET /users/me` retorna o usuario autenticado
 
 - **Categorias**  
   - Associação de produtos a categorias
 
-- **Pedidos**  
-  - Estrutura de entidades para pedidos, itens de pedido e pagamentos
+- **Pedidos**
+  - `GET /orders/{id}` e `POST /orders`
+  - Regra de acesso: usuario `ADMIN` acessa qualquer pedido, cliente comum acessa apenas pedidos proprios
 
 - **Usuários**  
   - Cadastro de usuários e associação com pedidos
@@ -46,9 +46,28 @@ Projeto de backend para um sistema de e-commerce, desenvolvido com Spring Boot.
 
 - `GET /products` — Lista produtos paginados
 - `GET /products/{id}` — Detalha produto por ID
-- `POST /products` — Cria novo produto
-- `PUT /products/{id}` — Atualiza produto
-- `DELETE /products/{id}` — Remove produto
+- `POST /auth/login` — Login e emissao do token JWT
+- `POST /products` — Cria novo produto (`ADMIN`)
+- `PUT /products/{id}` — Atualiza produto (`ADMIN`)
+- `DELETE /products/{id}` — Remove produto (`ADMIN`)
+- `GET /categories` — Lista categorias (publico)
+- `GET /users/me` — Retorna usuario logado
+- `GET /orders/{id}` — Busca pedido (dono ou `ADMIN`)
+- `POST /orders` — Cria pedido para usuario autenticado
+
+## Exemplo rapido de login
+
+```sh
+curl -X POST http://localhost:8080/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"alex@gmail.com","password":"123456"}'
+```
+
+Use o valor de `access_token` no header:
+
+```sh
+Authorization: Bearer <token>
+```
 
 ## Estrutura do projeto
 

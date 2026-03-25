@@ -11,7 +11,6 @@ import java.util.Objects;
 public class Payment {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
@@ -19,6 +18,7 @@ public class Payment {
 
     @OneToOne
     @MapsId
+    @JoinColumn(name = "order_id")
     private Order order;
 
     public Payment() {
@@ -57,9 +57,8 @@ public class Payment {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Payment payment = (Payment) o;
+        if (this == o) return true;
+        if (!(o instanceof Payment payment)) return false;
         return Objects.equals(id, payment.id);
     }
 
