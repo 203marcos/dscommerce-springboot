@@ -55,6 +55,37 @@ Projeto de backend para um sistema de e-commerce, desenvolvido com Spring Boot.
 - `GET /orders/{id}` — Busca pedido (dono ou `ADMIN`)
 - `POST /orders` — Cria pedido para usuario autenticado
 
+## Testes (portfolio backend jr)
+
+Os testes foram organizados por objetivo para facilitar leitura e manutencao:
+
+- `src/test/java/com/devsuperior/dscommerce/smoke`  
+  Teste de smoke (`ApplicationContextSmokeTest`) para garantir que o contexto Spring sobe.
+- `src/test/java/com/devsuperior/dscommerce/integration`  
+  Testes de integracao com `MockMvc` cobrindo autenticacao, autorizacao e regras de negocio dos endpoints.
+
+### Cobertura dos criterios do desafio
+
+- Endpoints publicos (`GET /products`, `GET /products/{id}`, `GET /categories`)
+- Login com token (`POST /auth/login`)
+- Restricao de escrita de produtos para `ADMIN` (`POST/PUT/DELETE /products`)
+- Usuario logado (`GET /users/me`)
+- Pedidos (`GET /orders/{id}`, `POST /orders`)
+- Regra de dono/admin para pedido (`GET /orders/{id}`)
+
+### Como rodar os testes
+
+```sh
+./mvnw test
+```
+
+## Fluxo de branches usado
+
+- `feature/desafio-dscommerce-estrutura`: implementacao incremental
+- `develop`: integracao da feature
+- `main`: branch de entrega
+- `test`: branch de portfolio para evolucao e organizacao de testes
+
 ## Exemplo rapido de login
 
 ```sh
