@@ -12,7 +12,6 @@ public class ProductDTO {
     private String name;
 
     @Size(min = 10, message = "A descrição precisa ter no minimo 10 caracteres")
-    @Size
     @NotBlank (message = "Campo requerido")
     private String description;
 
@@ -44,19 +43,39 @@ public class ProductDTO {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDescription() {
         return description;
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public Double getPrice() {
         return price;
     }
 
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
     public String getImgUrl() {
         return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
     }
 }
