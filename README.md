@@ -1,61 +1,53 @@
 # DSCommerce
 
-Projeto de backend para um sistema de e-commerce, desenvolvido com Spring Boot.
+Backend de e-commerce com Java e Spring Boot, implementado no desafio de login e controle de acesso.
 
-## Tecnologias
+## Stack usada no projeto
 
 - Java 17
-- Spring Boot
+- Spring Boot 3
+- Spring Web
 - Spring Data JPA
-- H2 Database (ambiente de testes)
-- Maven
+- Spring Security
+- Bean Validation (`spring-boot-starter-validation`)
+- JWT (`jjwt-api`, `jjwt-impl`, `jjwt-jackson`)
+- H2 Database (perfil `test`)
+- Maven Wrapper (`./mvnw`)
+- Testes com JUnit 5 + Spring Boot Test + MockMvc
 
-## Funcionalidades Implementadas
+## Funcionalidades entregues
 
-- **Autenticacao e autorizacao (JWT)**
-  - `POST /auth/login` retorna token de acesso
-  - Endpoints `GET /products` e `GET /products/{id}` sao publicos
-  - Endpoints `POST/PUT/DELETE /products` exigem perfil `ADMIN`
-  - Endpoint `GET /users/me` retorna o usuario autenticado
+- Autenticacao JWT em `POST /auth/login`
+- Endpoints publicos de produto: `GET /products`, `GET /products/{id}`
+- Escrita de produto (`POST/PUT/DELETE /products`) restrita a `ADMIN`
+- `GET /users/me` retorna usuario autenticado
+- `GET /orders/{id}` e `POST /orders`
+- Regra de seguranca para pedido: cliente nao-admin so acessa pedido proprio
+- `GET /categories` publico
 
-- **Categorias**  
-  - Associação de produtos a categorias
+## Endpoints e regra de acesso
 
-- **Pedidos**
-  - `GET /orders/{id}` e `POST /orders`
-  - Regra de acesso: usuario `ADMIN` acessa qualquer pedido, cliente comum acessa apenas pedidos proprios
-
-- **Usuários**  
-  - Cadastro de usuários e associação com pedidos
-
-- **Tratamento de Erros**  
-  - Exceções customizadas para recursos não encontrados e erros de banco de dados
-  - Handler global para respostas de erro padronizadas
+- `POST /auth/login` -> publico
+- `GET /products` -> publico
+- `GET /products/{id}` -> publico
+- `POST /products` -> `ADMIN`
+- `PUT /products/{id}` -> `ADMIN`
+- `DELETE /products/{id}` -> `ADMIN`
+- `GET /categories` -> publico
+- `GET /users/me` -> autenticado
+- `GET /orders/{id}` -> `ADMIN` ou dono do pedido
+- `POST /orders` -> `CLIENT` ou `ADMIN`
 
 ## Como executar
 
-1. Clone o repositório
-2. Execute o projeto com o Maven:
-   ```sh
-   ./mvnw spring-boot:run
-   ```
-3. Acesse o H2 Console em [http://localhost:8080/h2-console](http://localhost:8080/h2-console)  
-   (usuário: `sa`, senha: em branco)
+```sh
+./mvnw spring-boot:run
+```
 
-## Endpoints principais
+Aplicacao: `http://localhost:8080`  
+H2 Console: `http://localhost:8080/h2-console`
 
-- `GET /products` — Lista produtos paginados
-- `GET /products/{id}` — Detalha produto por ID
-- `POST /auth/login` — Login e emissao do token JWT
-- `POST /products` — Cria novo produto (`ADMIN`)
-- `PUT /products/{id}` — Atualiza produto (`ADMIN`)
-- `DELETE /products/{id}` — Remove produto (`ADMIN`)
-- `GET /categories` — Lista categorias (publico)
-- `GET /users/me` — Retorna usuario logado
-- `GET /orders/{id}` — Busca pedido (dono ou `ADMIN`)
-- `POST /orders` — Cria pedido para usuario autenticado
-
-## Exemplo rapido de login
+## Login rapido
 
 ```sh
 curl -X POST http://localhost:8080/auth/login \
@@ -63,26 +55,58 @@ curl -X POST http://localhost:8080/auth/login \
   -d '{"username":"alex@gmail.com","password":"123456"}'
 ```
 
-Use o valor de `access_token` no header:
+Use o token retornado no header:
 
 ```sh
-Authorization: Bearer <token>
+Authorization: Bearer <access_token>
+```
+
+## Usuarios seed para teste
+
+- `alex@gmail.com` / `123456` -> `ROLE_ADMIN` + `ROLE_CLIENT`
+- `maria@gmail.com` / `123456` -> `ROLE_CLIENT`
+- `bob@gmail.com` / `123456` -> `ROLE_CLIENT`
+
+## Testes
+
+Organizacao da suite:
+
+- `src/test/java/com/devsuperior/dscommerce/smoke`
+  - `ApplicationContextSmokeTest` (subida do contexto)
+- `src/test/java/com/devsuperior/dscommerce/integration`
+  - testes de API com MockMvc (auth, autorizacao e regras de negocio)
+
+Executar testes:
+
+```sh
+./mvnw test
 ```
 
 ## Estrutura do projeto
 
-- `entities` — Modelos de dados (Produto, Categoria, Pedido, Usuário, etc)
-- `dto` — Data Transfer Objects
-- `repositories` — Interfaces de acesso ao banco
-- `services` — Regras de negócio
-- `controllers` — Endpoints REST
-- `controllers/handlers` — Tratamento global de exceções
+- `src/main/java/com/devsuperior/dscommerce/config` -> seguranca JWT e filtro
+- `src/main/java/com/devsuperior/dscommerce/controllers` -> endpoints REST
+- `src/main/java/com/devsuperior/dscommerce/controllers/handlers` -> tratamento global de erros
+- `src/main/java/com/devsuperior/dscommerce/dto` -> contratos de entrada/saida
+- `src/main/java/com/devsuperior/dscommerce/entities` -> modelo de dominio
+- `src/main/java/com/devsuperior/dscommerce/repositories` -> acesso a dados
+- `src/main/java/com/devsuperior/dscommerce/services` -> regras de negocio
+- `src/main/resources/import.sql` -> carga inicial de dados
 
-## Observações
+## Branches do fluxo
 
-- O banco de dados é populado automaticamente com dados de exemplo via `import.sql`.
-- O perfil ativo padrão é `test` (H2 em memória).
+- `feature/desafio-dscommerce-estrutura`
+- `develop`
+- `main`
+- `test` (portifolio, melhoria e organizacao dos testes)
 
----
+## Sobre a pasta `target`
 
-> Projeto desenvolvido para fins de estudo e prática com Spring Boot.
+`target/` **nao e codigo-fonte**. Ela e gerada automaticamente pelo Maven com:
+
+- classes compiladas
+- relatorios de teste
+- artefatos de build
+
+Por isso, normalmente **nao deve ser versionada no Git**.  
+No projeto, ela ja esta ignorada em `.gitignore`.
