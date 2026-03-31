@@ -24,6 +24,18 @@ class AuthAndProductsSecurityIntegrationTest extends AbstractIntegrationTest {
     }
 
     @Test
+    void oauthTokenShouldReturnAccessTokenWithFormUrlEncoded() throws Exception {
+        mockMvc.perform(post("/oauth2/token")
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .param("username", "alex@gmail.com")
+                        .param("password", "123456")
+                        .param("grant_type", "password"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.access_token").isNotEmpty())
+                .andExpect(jsonPath("$.token_type").value("Bearer"));
+    }
+
+    @Test
     void productsWriteShouldRejectClientRole() throws Exception {
         String clientToken = getToken("maria@gmail.com", "123456");
         String body = "{\"name\":\"Notebook Teste\",\"description\":\"Descricao valida para teste\",\"price\":2000.0,\"imgUrl\":\"http://img\"}";
